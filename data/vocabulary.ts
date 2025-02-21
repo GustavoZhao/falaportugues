@@ -1,4 +1,6 @@
 import * as XLSX from 'xlsx';
+import type { VocabularyWord } from "@/lib/types"
+import vocabularyJson from './vocabulary.json'
 
 export interface VocabularyItem {
   word: string;
@@ -31,3 +33,10 @@ export function groupVocabularyByLevel(vocabulary: VocabularyItem[], wordsPerLev
   
   return levels;
 }
+
+// 将 JSON 数据转换为 VocabularyWord 格式
+export const vocabularyList: VocabularyWord[] = vocabularyJson.map(item => ({
+  portuguese: item.word,
+  chinese: item.translation,
+  partOfSpeech: item.partOfSpeech
+}));

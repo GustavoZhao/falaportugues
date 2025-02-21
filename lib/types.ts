@@ -26,3 +26,11 @@ export type User = {
   }
 }
 
+export interface VocabularyWord {
+  portuguese: string;
+  chinese: string;
+  partOfSpeech: string; // 词性，如 "n." "v." "adj." 等
+}
+
+export type GameMode = "PT_TO_CN" | "CN_TO_PT"; // PT = 葡萄牙语, CN = 中文
+

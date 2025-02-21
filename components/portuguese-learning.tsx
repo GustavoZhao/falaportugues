@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { AuthButton } from "@/components/auth-button"
 import Image from 'next/image'
 import SpellingChallenge from "./spelling-challenge"
 import VocabularyChallenge from "./vocabulary-challenge"
@@ -16,7 +15,7 @@ const sourceHanSans = localFont({
 })
 
 export default function PortugueseLearning() {
-  const [activeTab, setActiveTab] = useState("spelling")
+  const [activeTab, setActiveTab] = useState("vocabulary")
 
   return (
     <div className={`min-h-screen flex flex-col bg-background ${sourceHanSans.variable}`}>
@@ -41,8 +40,8 @@ export default function PortugueseLearning() {
             <div className="flex items-center gap-6">
               <nav className="hidden md:flex space-x-1">
                 {[
-                  { id: "spelling", name: "拼写队长" },
                   { id: "vocabulary", name: "词汇大师" },
+                  { id: "spelling", name: "拼写队长" },
                   { id: "stories", name: "故事大王" },
                   { id: "conjugation", name: "变位之神" },
                 ].map((item) => (
@@ -60,7 +59,6 @@ export default function PortugueseLearning() {
                   </Button>
                 ))}
               </nav>
-              <AuthButton />
             </div>
           </div>
         </div>
@@ -70,8 +68,8 @@ export default function PortugueseLearning() {
       <div className="md:hidden border-b bg-background">
         <div className="flex overflow-x-auto py-2 px-4 gap-2">
           {[
-            { id: "spelling", name: "拼写队长" },
             { id: "vocabulary", name: "词汇大师" },
+            { id: "spelling", name: "拼写队长" },
             { id: "stories", name: "故事大王" },
             { id: "conjugation", name: "变位之神" },
           ].map((item) => (
@@ -91,8 +89,8 @@ export default function PortugueseLearning() {
 
       {/* 主要内容区域 */}
       <main className="flex-1 p-6 md:p-8 max-w-4xl mx-auto w-full">
-        {activeTab === "spelling" && <SpellingChallenge />}
         {activeTab === "vocabulary" && <VocabularyChallenge />}
+        {activeTab === "spelling" && <SpellingChallenge />}
         {activeTab === "stories" && <StoryChallenge />}
         {activeTab === "conjugation" && <ConjugationChallenge />}
       </main>
