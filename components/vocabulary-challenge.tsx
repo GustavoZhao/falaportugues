@@ -24,40 +24,37 @@ export default function VocabularyChallenge() {
   const [questionCount, setQuestionCount] = useState(0)
   const [correctStreak, setCorrectStreak] = useState(0)
   const [showCelebration, setShowCelebration] = useState(false)
-  const [levelStars, setLevelStars] = useState(() => {
-    const savedProgress = localStorage.getItem('vocabularyProgress')
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress)
-      return progress.levelStars || Array(TOTAL_LEVELS).fill('☆☆☆')
-    }
-    return Array(TOTAL_LEVELS).fill('☆☆☆')
-  })
+  const [levelStars, setLevelStars] = useState<string[]>(Array(TOTAL_LEVELS).fill('☆☆☆'))
   const [usedWords, setUsedWords] = useState<Set<string>>(new Set())
   const [correctWords, setCorrectWords] = useState<Set<string>>(new Set())
 
   // 加载游戏进度
   useEffect(() => {
-    const savedProgress = localStorage.getItem('vocabularyProgress')
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress)
-      setTotalScore(progress.totalScore)
-      setCurrentLevel(progress.currentLevel)
-      setLevelStars(progress.levelStars || Array(TOTAL_LEVELS).fill('☆☆☆'))
-      setUsedWords(new Set(progress.usedWords || []))
-      setCorrectWords(new Set(progress.correctWords || []))
+    if (typeof window !== 'undefined') {
+      const savedProgress = localStorage.getItem('vocabularyProgress')
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress)
+        setTotalScore(progress.totalScore)
+        setCurrentLevel(progress.currentLevel)
+        setLevelStars(progress.levelStars || Array(TOTAL_LEVELS).fill('☆☆☆'))
+        setUsedWords(new Set(progress.usedWords || []))
+        setCorrectWords(new Set(progress.correctWords || []))
+      }
     }
   }, [])
 
   // 保存游戏进度
   const saveProgress = () => {
-    const progress = {
-      totalScore,
-      currentLevel,
-      levelStars,
-      usedWords: Array.from(usedWords),
-      correctWords: Array.from(correctWords)
+    if (typeof window !== 'undefined') {
+      const progress = {
+        totalScore,
+        currentLevel,
+        levelStars,
+        usedWords: Array.from(usedWords),
+        correctWords: Array.from(correctWords)
+      }
+      localStorage.setItem('vocabularyProgress', JSON.stringify(progress))
     }
-    localStorage.setItem('vocabularyProgress', JSON.stringify(progress))
   }
 
   // 开始游戏
