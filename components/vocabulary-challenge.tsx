@@ -324,7 +324,6 @@ export default function VocabularyChallenge() {
                 p-4 rounded-lg text-lg font-semibold
                 transition-colors duration-200
                 outline-none
-                -webkit-tap-highlight-color: transparent;
                 ${
                   selectedAnswer === option
                     ? showResult

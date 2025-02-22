@@ -23,8 +23,8 @@ export default function PortugueseLearning() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-24">
-            <div className="flex items-center gap-4">
-              {/* 替换为实际的 Logo */}
+            <div className="flex items-center gap-1">
+              {/* Logo */}
               <Image 
                 src="/fala-logo.png" 
                 alt="Fala Logo" 
@@ -32,7 +32,7 @@ export default function PortugueseLearning() {
                 height={48}
                 className="rounded-full"
               />
-              <h1 className={`text-2xl font-black text-[#2546FB] mr-10 ${sourceHanSans.className}`}>
+              <h1 className={`text-2xl text-[#2546FB] mr-10 ${sourceHanSans.className} whitespace-nowrap`}>
                 光明的葡萄牙语
               </h1>
             </div>
