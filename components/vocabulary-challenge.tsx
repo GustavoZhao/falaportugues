@@ -221,10 +221,8 @@ export default function VocabularyChallenge() {
 
   // 修改 generateNewQuestion 函数
   const generateNewQuestion = async () => {
-    // 使用 Math.random() 替代 randomRef.current
     const newGameMode = Math.random() < 0.5 ? "PT_TO_CN" : "CN_TO_PT";
 
-    // 使用传递的难度
     const filteredList = getFilteredVocabularyList(
       selectedDifficulty,
       currentLevel,
@@ -236,25 +234,56 @@ export default function VocabularyChallenge() {
     const availableWords = filteredList.filter(word => !currentLevelWords.has(word.word));
 
     if (availableWords.length === 0) {
-        console.warn('所有单词都已使用过，重新开始');
-        setCurrentLevelWords(new Set());
-        return; // 不再递归调用
+      console.warn('所有单词都已使用过，重新开始');
+      setCurrentLevelWords(new Set());
+      return;
     }
 
     const randomIndex = Math.floor(Math.random() * availableWords.length);
     const word = availableWords[randomIndex];
 
     if (!word) {
-        console.warn('无法获取单词，重新生成问题');
-        return; // 不再递归调用
+      console.warn('无法获取单词，重新生成问题');
+      return;
     }
 
-    const correctAnswer = newGameMode === "PT_TO_CN" ? word.translation : word.word; 
-    const otherOptions = filteredList
-        .filter(w => !currentLevelWords.has(w.word) && w.word !== word.word)
-        .map(w => newGameMode === "PT_TO_CN" ? w.translation : w.word)
+    const correctAnswer = newGameMode === "PT_TO_CN" ? word.translation : word.word;
+
+    // 首先获取相同词性的单词
+    const samePartOfSpeechWords = filteredList.filter(w => 
+      w.partOfSpeech === word.partOfSpeech && // 确保词性相同
+      w.word !== word.word && // 排除当前单词
+      !currentLevelWords.has(w.word) // 排除已使用的单词
+    );
+
+    // 如果相同词性的单词不足3个，获取其他词性的单词来补充
+    let otherOptions: string[] = [];
+    if (samePartOfSpeechWords.length >= 3) {
+      // 如果有足够的相同词性单词，直接使用
+      otherOptions = samePartOfSpeechWords
         .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
+        .slice(0, 3)
+        .map(w => newGameMode === "PT_TO_CN" ? w.translation : w.word);
+    } else {
+      // 如果相同词性的单词不足，先添加所有相同词性的单词
+      otherOptions = samePartOfSpeechWords
+        .map(w => newGameMode === "PT_TO_CN" ? w.translation : w.word);
+
+      // 获取不同词性的单词来补充
+      const differentPartOfSpeechWords = filteredList.filter(w => 
+        w.partOfSpeech !== word.partOfSpeech && // 不同词性
+        w.word !== word.word && // 排除当前单词
+        !currentLevelWords.has(w.word) // 排除已使用的单词
+      );
+
+      // 随机选择需要补充的数量
+      const additionalOptions = differentPartOfSpeechWords
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3 - otherOptions.length)
+        .map(w => newGameMode === "PT_TO_CN" ? w.translation : w.word);
+
+      otherOptions = [...otherOptions, ...additionalOptions];
+    }
     
     const allOptions = [...otherOptions, correctAnswer].sort();
 
@@ -270,9 +299,9 @@ export default function VocabularyChallenge() {
     }
 
     setCurrentLevelWords(prev => {
-        const newSet = new Set(prev);
-        newSet.add(word.word);
-        return newSet;
+      const newSet = new Set(prev);
+      newSet.add(word.word);
+      return newSet;
     });
   }
 
@@ -360,7 +389,44 @@ export default function VocabularyChallenge() {
       progress.levelStars[selectedDifficulty] = stars;
       localStorage.setItem('vocabularyProgress', JSON.stringify(progress));
 
+      // 检查是否是当前难度的最后一关
+      const isLastLevel = (() => {
+        switch (selectedDifficulty) {
+          case "A2": return currentLevel === 4;
+          case "B1": return currentLevel === 15;
+          case "B2": return currentLevel === 20;
+          case "C1": return currentLevel === 10;
+          case "C2": return currentLevel === 6;
+          default: return false;
+        }
+      })();
+
       setIsLevelComplete(true);
+
+      // 如果是最后一关，显示完成难度的提示
+      if (isLastLevel) {
+        return (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[200]">
+            <div className="bg-white p-6 rounded-lg text-center">
+              <h2 className="text-2xl font-bold mb-4">
+                🎉 恭喜你完成了本级别的练习！
+              </h2>
+              <p className="mb-2">最终得分: {totalScore}</p>
+              <p className="mb-4">星级: {levelStars[selectedDifficulty].replace(/✩/g, '')}</p>
+              <button
+                onClick={() => {
+                  setView('difficulty');
+                  setIsPlaying(false);
+                }}
+                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                返回难度选择
+              </button>
+            </div>
+          </div>
+        );
+      }
+
       return; // 直接返回，不生成新题目
     }
 
@@ -464,10 +530,11 @@ export default function VocabularyChallenge() {
             ← 返回难度选择
           </button>
           <h1 className="text-2xl font-bold text-center">{selectedDifficulty} 级别</h1>
-          <div className="w-20"></div> {/* 占位，保持标题居中 */}
+          <div className="w-20"></div>
         </div>
         
-        <div className="grid grid-cols-4 gap-4 max-w-2xl mx-auto">
+        {/* 修改网格布局，在移动端使用 2 列 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-2xl mx-auto">
           {levels.map((_, index) => {
             const isUnlocked = index === 0 || levelProgress[selectedDifficulty]?.includes(index - 1);
             const isCompleted = levelProgress[selectedDifficulty]?.includes(index);
@@ -484,7 +551,7 @@ export default function VocabularyChallenge() {
                   }
                 }}
                 className={`
-                  p-4 rounded-lg text-center
+                  p-3 md:p-4 rounded-lg text-center
                   ${isUnlocked 
                     ? isCompleted
                       ? 'bg-green-100 border-2 border-green-500'
@@ -493,14 +560,14 @@ export default function VocabularyChallenge() {
                   transition-shadow duration-200
                 `}
               >
-                <div className="text-lg font-bold">关卡 {index + 1}</div>
+                <div className="text-base md:text-lg font-bold">关卡 {index + 1}</div>
                 {isCompleted && (
-                  <div className="text-sm text-green-600">
+                  <div className="text-xs md:text-sm text-green-600">
                     {levelStars[selectedDifficulty]}
                   </div>
                 )}
                 {!isUnlocked && (
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs md:text-sm text-gray-500">
                     🔒 未解锁
                   </div>
                 )}
@@ -587,14 +654,15 @@ export default function VocabularyChallenge() {
                   p-4 rounded-lg text-lg font-semibold
                   transition-colors duration-200
                   outline-none
+                  -webkit-tap-highlight-color-transparent
                   ${
                     showResult && option === correctAnswer && selectedAnswer !== correctAnswer
-                      ? 'bg-white border-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]' // 答错时正确答案显示蓝色光效果
+                      ? 'bg-white border-2 border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]'
                       : selectedAnswer === option
                         ? showResult
                           ? selectedAnswer === correctAnswer
-                            ? 'bg-[#FADE4B]' // 答对时显示黄色高亮
-                            : 'bg-red-500 text-white' // 错误答案显示红色
+                            ? 'bg-[#FADE4B]'
+                            : 'bg-red-500 text-white'
                           : 'bg-blue-500 text-white'
                         : 'bg-gray-100 hover:bg-gray-200 active:bg-gray-300'
                   }
