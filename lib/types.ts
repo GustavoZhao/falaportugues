@@ -32,7 +32,11 @@ export interface VocabularyItem {
   translation: string;
   portuguese: string;
   chinese: string;
+  difficulty?: Difficulty;
 }
 
 export type GameMode = "PT_TO_CN" | "CN_TO_PT"; // PT = 葡萄牙语, CN = 中文
+
+// 定义难度类型
+export type Difficulty = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
 

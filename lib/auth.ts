@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 
 export async function getUser() {
-  const token = cookies().get("user-token")
+  const token = (await cookies()).get("user-token")
   if (!token) return null
 
   // 这里应该调用你的后端 API 验证 token 并返回用户信息

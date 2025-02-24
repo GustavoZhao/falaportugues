@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Image from 'next/image'
 import SpellingChallenge from "./spelling-challenge"
@@ -8,14 +8,28 @@ import VocabularyChallenge from "./vocabulary-challenge"
 import StoryChallenge from "./story-challenge"
 import ConjugationChallenge from "./conjugation-challenge"
 import localFont from 'next/font/local'
+import Link from "next/link"
+import type { Difficulty } from "@/lib/types"
+import dynamic from 'next/dynamic'
 
 const sourceHanSans = localFont({
   src: '../public/fonts/SourceHanSansCN-Heavy.otf',
   variable: '--font-source-han-sans'
 })
 
+const NoSSR = dynamic(() => import('../components/no-ssr'), { ssr: false })
+
 export default function PortugueseLearning() {
   const [activeTab, setActiveTab] = useState("vocabulary")
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return <div>加载中...</div> // 返回一个加载指示器
+  }
 
   return (
     <div className={`min-h-screen flex flex-col bg-background ${sourceHanSans.variable}`}>
@@ -48,7 +62,7 @@ export default function PortugueseLearning() {
                   <Button
                     key={item.id}
                     variant={activeTab === item.id ? "default" : "ghost"}
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() => setActiveTab(item.id)} // 确保更新 activeTab
                     className={`px-4 ${
                       activeTab === item.id
                         ? "bg-primary text-white"
@@ -76,7 +90,9 @@ export default function PortugueseLearning() {
             <Button
               key={item.id}
               variant={activeTab === item.id ? "default" : "ghost"}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                setActiveTab(item.id); // 确保更新 activeTab
+              }}
               className={`px-4 whitespace-nowrap ${
                 activeTab === item.id ? "bg-primary text-white" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               }`}

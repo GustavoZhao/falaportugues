@@ -4,6 +4,9 @@ export interface VocabularyItem {
   word: string;
   partOfSpeech: string;
   translation: string;
+  portuguese: string;
+  chinese: string;
+  difficulty?: string;
 }
 // 将 JSON 数据映射为 VocabularyItem 类型的数组
 export const vocabularyList: VocabularyItem[] = vocabularyJson.map(item => ({
@@ -12,6 +15,7 @@ export const vocabularyList: VocabularyItem[] = vocabularyJson.map(item => ({
   translation: item.translation,
   portuguese: item.word,
   chinese: item.translation,
+  difficulty: item.difficulty
 }));
 
 // 将词汇按难度分级
