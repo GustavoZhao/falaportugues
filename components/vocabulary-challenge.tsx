@@ -221,7 +221,8 @@ export default function VocabularyChallenge() {
 
   // 修改 generateNewQuestion 函数
   const generateNewQuestion = async () => {
-    const newGameMode = randomRef.current < 0.5 ? "PT_TO_CN" : "CN_TO_PT"; 
+    // 使用 Math.random() 替代 randomRef.current
+    const newGameMode = Math.random() < 0.5 ? "PT_TO_CN" : "CN_TO_PT";
 
     // 使用传递的难度
     const filteredList = getFilteredVocabularyList(
