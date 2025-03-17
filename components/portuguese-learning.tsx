@@ -9,16 +9,11 @@ import StoryChallenge from "./story-challenge"
 import ConjugationChallenge from "./conjugation-challenge"
 import NumberListeningChallenge from "./number-listening-challenge"
 import localFont from 'next/font/local'
-import Link from "next/link"
-import type { Difficulty } from "@/lib/types"
-import dynamic from 'next/dynamic'
 
 const sourceHanSans = localFont({
   src: '../public/fonts/SourceHanSansCN-Heavy.otf',
   variable: '--font-source-han-sans'
 })
-
-const NoSSR = dynamic(() => import('../components/no-ssr'), { ssr: false })
 
 export default function PortugueseLearning() {
   const [activeTab, setActiveTab] = useState("vocabulary")
