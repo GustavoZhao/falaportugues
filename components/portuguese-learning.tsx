@@ -7,6 +7,7 @@ import SpellingChallenge from "./spelling-challenge"
 import VocabularyChallenge from "./vocabulary-challenge"
 import StoryChallenge from "./story-challenge"
 import ConjugationChallenge from "./conjugation-challenge"
+import NumberListeningChallenge from "./number-listening-challenge"
 import localFont from 'next/font/local'
 import Link from "next/link"
 import type { Difficulty } from "@/lib/types"
@@ -28,7 +29,7 @@ export default function PortugueseLearning() {
   }, [])
 
   if (!isMounted) {
-    return <div>加载中...</div> // 返回一个加载指示器
+    return <div>加载中...</div>
   }
 
   return (
@@ -58,11 +59,12 @@ export default function PortugueseLearning() {
                   { id: "spelling", name: "拼写队长" },
                   { id: "stories", name: "故事大王" },
                   { id: "conjugation", name: "变位之神" },
+                  { id: "numbers", name: "数字主宰" },
                 ].map((item) => (
                   <Button
                     key={item.id}
                     variant={activeTab === item.id ? "default" : "ghost"}
-                    onClick={() => setActiveTab(item.id)} // 确保更新 activeTab
+                    onClick={() => setActiveTab(item.id)}
                     className={`px-4 ${
                       activeTab === item.id
                         ? "bg-primary text-white"
@@ -86,12 +88,13 @@ export default function PortugueseLearning() {
             { id: "spelling", name: "拼写队长" },
             { id: "stories", name: "故事大王" },
             { id: "conjugation", name: "变位之神" },
+            { id: "numbers", name: "数字主宰" },
           ].map((item) => (
             <Button
               key={item.id}
               variant={activeTab === item.id ? "default" : "ghost"}
               onClick={() => {
-                setActiveTab(item.id); // 确保更新 activeTab
+                setActiveTab(item.id);
               }}
               className={`px-4 whitespace-nowrap ${
                 activeTab === item.id ? "bg-primary text-white" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
@@ -109,8 +112,8 @@ export default function PortugueseLearning() {
         {activeTab === "spelling" && <SpellingChallenge />}
         {activeTab === "stories" && <StoryChallenge />}
         {activeTab === "conjugation" && <ConjugationChallenge />}
+        {activeTab === "numbers" && <NumberListeningChallenge />}
       </main>
     </div>
   )
 }
-
